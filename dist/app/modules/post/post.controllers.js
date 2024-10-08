@@ -62,9 +62,9 @@ const getUserUpvoteddPosts = (0, catchAsync_1.default)((req, res) => __awaiter(v
     });
 }));
 const updatePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _b;
     const postId = req.params.postId;
-    const result = yield post_services_1.PostServices.updatePost(Object.assign(Object.assign({}, JSON.parse(req.body.data)), { image: (_a = req === null || req === void 0 ? void 0 : req.file) === null || _a === void 0 ? void 0 : _a.path }), postId);
+    const result = yield post_services_1.PostServices.updatePost(Object.assign(Object.assign({}, JSON.parse(req.body.data)), { image: (_b = req === null || req === void 0 ? void 0 : req.file) === null || _b === void 0 ? void 0 : _b.path }), postId);
     res.status(200).json({
         success: true,
         message: "Post Updated Successfully",

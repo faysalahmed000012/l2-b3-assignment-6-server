@@ -66,14 +66,14 @@ const follow = (userId, followId) => __awaiter(void 0, void 0, void 0, function*
     yield followUser.save();
 });
 const unFollow = (userId, unFollowId) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _d, _e;
     const user = yield user_model_1.User.findById(userId);
     const unFollowUser = yield user_model_1.User.findById(unFollowId);
     if (!user || !unFollowUser) {
         throw new AppError_1.default(404, "User Does Not Exists");
     }
-    user.following = (_a = user === null || user === void 0 ? void 0 : user.following) === null || _a === void 0 ? void 0 : _a.filter((id) => id !== unFollowId);
-    unFollowUser.followers = (_b = unFollowUser === null || unFollowUser === void 0 ? void 0 : unFollowUser.followers) === null || _b === void 0 ? void 0 : _b.filter((id) => id !== userId);
+    user.following = (_d = user === null || user === void 0 ? void 0 : user.following) === null || _d === void 0 ? void 0 : _d.filter((id) => id !== unFollowId);
+    unFollowUser.followers = (_e = unFollowUser === null || unFollowUser === void 0 ? void 0 : unFollowUser.followers) === null || _e === void 0 ? void 0 : _e.filter((id) => id !== userId);
     yield user.save();
     yield unFollowUser.save();
 });
