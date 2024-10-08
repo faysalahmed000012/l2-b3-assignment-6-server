@@ -6,22 +6,24 @@ export interface IUser {
   password: string;
   bio?: string;
   profilePicture?: string;
+  location?: string;
   role: "admin" | "user";
   posts?: string[];
   likes?: string[];
   comments?: string[];
   ratedPosts?: string[];
   followers?: string[];
+  following?: string[];
   isPremium: boolean;
+  tranId?: string | null;
   resetPasswordExpires: string | number | Date | undefined;
   resetPasswordToken: string | undefined;
   premiumExpires?: Date | null;
   passwordChangedAt: Date;
+  isBlocked: boolean;
 }
 
 export interface UserModel extends Model<IUser> {
-  //instance methods for checking if the user exist
-  //instance methods for checking if passwords are matched
   isPasswordMatched(
     plainTextPassword: string,
     hashedPassword: string

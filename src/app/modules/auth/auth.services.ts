@@ -15,8 +15,28 @@ const registerUser = async (payload: IUser) => {
   if (exists) {
     throw new AppError(409, "User Already Exists");
   }
-  const result = await User.create(payload);
-  return result;
+  const user = await User.create(payload);
+  const jwtPayload = {
+    email: user.email,
+    role: user.role,
+  };
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_accessToken_secret as string,
+    config.jwt_accessToken_expires_in as string
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refreshToken_secret as string,
+    config.jwt_refreshToken_expires_in as string
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+    user,
+  };
 };
 
 export interface ILogin {
@@ -123,12 +143,21 @@ const changePassword = async (
   return result;
 };
 
+const getUserByEmail = async (email: string) => {
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    throw new AppError(404, "User Does not Exists");
+  } else {
+    return user;
+  }
+};
+
 const forgotPassword = async (email: string) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: "faysal000012@gmail.com",
-      pass: "abcdefg",
+      pass: "ukdxgjgnnjzpqqmz",
     },
   });
 
@@ -140,7 +169,9 @@ const forgotPassword = async (email: string) => {
   user.resetPasswordToken = resetToken;
   user.resetPasswordExpires = Date.now() + 3600000;
 
-  const resetLink = `https://localhost:3000/reset-password/${resetToken}`;
+  await user.save();
+
+  const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
 
   const mailOptions = {
     from: "faysal000012@gmail.com",
@@ -166,6 +197,7 @@ const resetPassword = async (token: string, password: string) => {
     resetPasswordToken: token,
     resetPasswordExpires: { $gt: Date.now() },
   }).select("+password");
+
   if (!user) {
     throw new AppError(400, "Password reset Token is invalid or expires");
   }
@@ -173,6 +205,8 @@ const resetPassword = async (token: string, password: string) => {
   user.password = password; // Assuming you hash the password in your User model's pre-save hook
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;
+
+  await user.save();
 
   return "Password changed successfully";
 };
@@ -182,4 +216,7 @@ export const AuthServices = {
   userLogin,
   refreshToken,
   changePassword,
+  getUserByEmail,
+  forgotPassword,
+  resetPassword,
 };

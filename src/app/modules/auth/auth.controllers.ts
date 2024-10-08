@@ -3,14 +3,23 @@ import catchAsync from "../../utils/catchAsync";
 import { AuthServices } from "./auth.services";
 
 const registerUser = catchAsync(async (req, res) => {
-  const user = req.body;
-  const result = await AuthServices.registerUser(user);
+  const result = await AuthServices.registerUser(req.body);
+  const { accessToken, refreshToken, user } = result;
+  const { password, ...rest } = user;
+  const updatedUser = { ...rest, password: "" };
+
+  const response = res.cookie("refreshToken", refreshToken, {
+    secure: config.NODE_ENV !== "development",
+    httpOnly: true,
+  });
 
   res.status(201).json({
     success: true,
-    statusCode: 201,
-    message: "User created successfully",
-    data: result,
+    statusCode: 200,
+    message: "User Registered successfully",
+    AccessToken: accessToken,
+    RefreshToken: refreshToken,
+    data: updatedUser,
   });
 });
 
@@ -29,7 +38,8 @@ const userLogin = catchAsync(async (req, res) => {
     success: true,
     statusCode: 200,
     message: "User logged in successfully",
-    token: accessToken,
+    AccessToken: accessToken,
+    RefreshToken: refreshToken,
     data: updatedUser,
   });
 });
@@ -62,9 +72,45 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
+const getUserByEmail = catchAsync(async (req, res) => {
+  const email = req.params.email;
+  const result = await AuthServices.getUserByEmail(email);
+
+  res.status(200).json({
+    success: true,
+    message: "User Retrieved Successfully",
+    data: result,
+  });
+});
+
+const forgotPassword = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  const result = await AuthServices.forgotPassword(email);
+
+  res.status(200).json({
+    success: true,
+    message: "Password Reset Email sent",
+  });
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const result = await AuthServices.resetPassword(token, password);
+
+  res.status(200).json({
+    success: true,
+    message: "Password Has Been Reset",
+  });
+});
+
 export const AuthControllers = {
   registerUser,
   userLogin,
   refreshToken,
   changePassword,
+  getUserByEmail,
+  forgotPassword,
+  resetPassword,
 };

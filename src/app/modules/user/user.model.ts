@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 import config from "../../config";
 import { IUser, UserModel } from "./user.interfaces";
 
-const UserSchema = new Schema<IUser>(
+const UserSchema = new Schema<IUser, UserModel>(
   {
     name: {
       type: String,
@@ -22,6 +22,10 @@ const UserSchema = new Schema<IUser>(
       required: false,
     },
     profilePicture: {
+      type: String,
+      required: false,
+    },
+    location: {
       type: String,
       required: false,
     },
@@ -55,7 +59,16 @@ const UserSchema = new Schema<IUser>(
       ref: "User",
       required: false,
     },
+    following: {
+      type: [String],
+      ref: "User",
+      required: false,
+    },
     isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    isBlocked: {
       type: Boolean,
       default: false,
     },
@@ -65,6 +78,10 @@ const UserSchema = new Schema<IUser>(
     },
     resetPasswordToken: {
       type: Schema.Types.Mixed,
+      required: false,
+    },
+    tranId: {
+      type: String,
       required: false,
     },
     resetPasswordExpires: {
@@ -88,11 +105,6 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-// setting '' after saving password
-UserSchema.post("save", function (doc, next) {
-  (doc.password = ""), next();
-});
-
 UserSchema.statics.isPasswordMatched = async function (
   plainTextPassword,
   hashedPassword
@@ -108,5 +120,10 @@ UserSchema.statics.isJWTIssuedBeforePasswordChanged = function (
     new Date(passwordChangedTimestamp).getTime() / 1000;
   return passwordChangedTime > jwtIssuedTimestamp;
 };
+
+UserSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
 
 export const User = mongoose.model<IUser, UserModel>("User", UserSchema);
