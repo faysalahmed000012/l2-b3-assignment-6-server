@@ -10,7 +10,7 @@ const app: Application = express();
 // parsers
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://l2-b3-assignment-6-client.vercel.app/",
     credentials: true,
   })
 );

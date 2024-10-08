@@ -171,7 +171,7 @@ const forgotPassword = async (email: string) => {
 
   await user.save();
 
-  const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+  const resetLink = `https://l2-b3-assignment-6-client.vercel.app/reset-password/${resetToken}`;
 
   const mailOptions = {
     from: "faysal000012@gmail.com",

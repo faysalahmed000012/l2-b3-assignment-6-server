@@ -9,10 +9,7 @@ const createPost = async (data: IPost) => {
 };
 
 const getAllPosts = async (query: Record<string, unknown>) => {
-  const postQuery = new QueryBuilder(
-    Post.find({ isPremium: false }).populate("user"),
-    query
-  )
+  const postQuery = new QueryBuilder(Post.find().populate("user"), query)
     .search(["title", "description"])
     .filter()
     .sort()
