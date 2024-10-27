@@ -38,6 +38,15 @@ const getPostByUser = async (userId: string) => {
   return posts;
 };
 
+const getAllLikes = async (userId: string) => {
+  const posts = Post.find({ user: userId }).select("upVotes");
+  const totalLikes = (await posts).reduce(
+    (sum, item) => sum + (item.upVotes || 0),
+    0
+  );
+  return totalLikes;
+};
+
 const getUserUpvotedPosts = async (userId: string) => {
   const posts = Post.find({ "votes.user": userId }).populate("user");
   return posts;
@@ -187,4 +196,5 @@ export const PostServices = {
   getPostById,
   deleteComment,
   editComment,
+  getAllLikes,
 };

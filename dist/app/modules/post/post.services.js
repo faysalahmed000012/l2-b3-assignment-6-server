@@ -45,6 +45,11 @@ const getPostByUser = (userId) => __awaiter(void 0, void 0, void 0, function* ()
     const posts = post_model_1.Post.find({ user: userId }).populate("user");
     return posts;
 });
+const getAllLikes = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const posts = post_model_1.Post.find({ user: userId }).select("upVotes");
+    const totalLikes = (yield posts).reduce((sum, item) => sum + (item.upVotes || 0), 0);
+    return totalLikes;
+});
 const getUserUpvotedPosts = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = post_model_1.Post.find({ "votes.user": userId }).populate("user");
     return posts;
@@ -154,4 +159,5 @@ exports.PostServices = {
     getPostById,
     deleteComment,
     editComment,
+    getAllLikes,
 };

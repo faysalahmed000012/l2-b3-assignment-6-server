@@ -105,6 +105,11 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
+UserSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
+
 UserSchema.statics.isPasswordMatched = async function (
   plainTextPassword,
   hashedPassword
@@ -120,10 +125,5 @@ UserSchema.statics.isJWTIssuedBeforePasswordChanged = function (
     new Date(passwordChangedTimestamp).getTime() / 1000;
   return passwordChangedTime > jwtIssuedTimestamp;
 };
-
-UserSchema.post("save", function (doc, next) {
-  doc.password = "";
-  next();
-});
 
 export const User = mongoose.model<IUser, UserModel>("User", UserSchema);

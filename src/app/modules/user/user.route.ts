@@ -10,6 +10,7 @@ router.put(
   multerUpload.single("image"),
   UserControllers.updateProfile
 );
+router.get("/follow/:userId", UserControllers.getFollowersAndFollowing);
 router.delete("/:userId", UserControllers.deleteUser);
 router.get("/:email", UserControllers.getUserByEmail);
 router.put("/block", UserControllers.blockUser);

@@ -17,9 +17,7 @@ const registerUser = catchAsync(async (req, res) => {
     success: true,
     statusCode: 200,
     message: "User Registered successfully",
-    AccessToken: accessToken,
-    RefreshToken: refreshToken,
-    data: updatedUser,
+    data: result,
   });
 });
 
@@ -29,7 +27,7 @@ const userLogin = catchAsync(async (req, res) => {
   const { password, ...rest } = user;
   const updatedUser = { ...rest, password: "" };
 
-  const response = res.cookie("refreshToken", refreshToken, {
+  res.cookie("refreshToken", refreshToken, {
     secure: config.NODE_ENV !== "development",
     httpOnly: true,
   });

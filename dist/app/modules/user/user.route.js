@@ -7,6 +7,7 @@ const user_controllers_1 = require("./user.controllers");
 const router = (0, express_1.Router)();
 router.get("/", user_controllers_1.UserControllers.getAllUsers);
 router.put("/update", multer_config_1.multerUpload.single("image"), user_controllers_1.UserControllers.updateProfile);
+router.get("/follow/:userId", user_controllers_1.UserControllers.getFollowersAndFollowing);
 router.delete("/:userId", user_controllers_1.UserControllers.deleteUser);
 router.get("/:email", user_controllers_1.UserControllers.getUserByEmail);
 router.put("/block", user_controllers_1.UserControllers.blockUser);

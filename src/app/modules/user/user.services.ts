@@ -19,7 +19,7 @@ const getAllUsers = async () => {
 };
 
 const getUserByEmail = async (email: string) => {
-  const user = await User.findOne({ email }).select("-password");
+  const user = await User.findOne({ email });
   if (!user) {
     throw new AppError(404, "User Does not Exists");
   } else {
@@ -101,6 +101,13 @@ const deleteUser = async (userId: string) => {
   return result;
 };
 
+const getFollowersAndFollowing = async (userId: string) => {
+  const result = await User.findById(userId)
+    .populate("followers")
+    .populate("following");
+  return result;
+};
+
 export const UserServices = {
   updateProfile,
   getAllUsers,
@@ -112,4 +119,5 @@ export const UserServices = {
   follow,
   unFollow,
   deleteUser,
+  getFollowersAndFollowing,
 };

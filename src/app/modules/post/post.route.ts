@@ -7,6 +7,7 @@ const router = Router();
 router.post("/", multerUpload.single("image"), PostControllers.createPost);
 router.get("/", PostControllers.getAllPosts);
 router.get("/user/upvoted/:userId", PostControllers.getUserUpvoteddPosts);
+router.get("/user/getLikes/:userId", PostControllers.getAllLikes);
 router.get("/user/:userId", PostControllers.getPostByUser);
 router.get("/:postId", PostControllers.getPostById);
 router.put(

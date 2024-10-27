@@ -10,8 +10,7 @@ const app: Application = express();
 // parsers
 app.use(
   cors({
-    origin:
-      "https://l2-b3-assignment-6-client-git-main-faysalahmed000012s-projects.vercel.app/",
+    origin: "https://l2-b3-assignment-6-client.vercel.app/",
     credentials: true,
   })
 );

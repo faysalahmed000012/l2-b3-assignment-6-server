@@ -99,6 +99,17 @@ const deleteUser = catchAsync(async (req, res) => {
   });
 });
 
+const getFollowersAndFollowing = catchAsync(async (req, res) => {
+  const userId = req.params.userId;
+  const result = await UserServices.getFollowersAndFollowing(userId);
+
+  res.status(200).json({
+    success: true,
+    message: "User Followers and Following Retrieved Successfully",
+    data: result,
+  });
+});
+
 export const UserControllers = {
   updateProfile,
   getAllUsers,
@@ -107,4 +118,5 @@ export const UserControllers = {
   makeAdmin,
   follow,
   deleteUser,
+  getFollowersAndFollowing,
 };

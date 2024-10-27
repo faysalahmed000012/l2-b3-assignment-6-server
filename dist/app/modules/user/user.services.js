@@ -26,7 +26,7 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     return users;
 });
 const getUserByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findOne({ email }).select("-password");
+    const user = yield user_model_1.User.findOne({ email });
     if (!user) {
         throw new AppError_1.default(404, "User Does not Exists");
     }
@@ -81,6 +81,12 @@ const deleteUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.User.findByIdAndDelete(userId);
     return result;
 });
+const getFollowersAndFollowing = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.findById(userId)
+        .populate("followers")
+        .populate("following");
+    return result;
+});
 exports.UserServices = {
     updateProfile,
     getAllUsers,
@@ -92,4 +98,5 @@ exports.UserServices = {
     follow,
     unFollow,
     deleteUser,
+    getFollowersAndFollowing,
 };

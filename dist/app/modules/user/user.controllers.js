@@ -100,6 +100,15 @@ const deleteUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+const getFollowersAndFollowing = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.userId;
+    const result = yield user_services_1.UserServices.getFollowersAndFollowing(userId);
+    res.status(200).json({
+        success: true,
+        message: "User Followers and Following Retrieved Successfully",
+        data: result,
+    });
+}));
 exports.UserControllers = {
     updateProfile,
     getAllUsers,
@@ -108,4 +117,5 @@ exports.UserControllers = {
     makeAdmin,
     follow,
     deleteUser,
+    getFollowersAndFollowing,
 };

@@ -60,6 +60,17 @@ const getUserUpvoteddPosts = catchAsync(async (req, res) => {
   });
 });
 
+const getAllLikes = catchAsync(async (req, res) => {
+  const userId = req.params.userId;
+  const posts = await PostServices.getAllLikes(userId);
+
+  res.status(200).json({
+    success: true,
+    message: "All Posts Fetched Successfully",
+    data: posts,
+  });
+});
+
 const updatePost = catchAsync(async (req, res) => {
   const postId = req.params.postId;
 
@@ -166,4 +177,5 @@ export const PostControllers = {
   getPostById,
   getPostByUser,
   getUserUpvoteddPosts,
+  getAllLikes,
 };

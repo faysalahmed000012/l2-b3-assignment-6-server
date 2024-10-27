@@ -8,6 +8,7 @@ const router = (0, express_1.Router)();
 router.post("/", multer_config_1.multerUpload.single("image"), post_controllers_1.PostControllers.createPost);
 router.get("/", post_controllers_1.PostControllers.getAllPosts);
 router.get("/user/upvoted/:userId", post_controllers_1.PostControllers.getUserUpvoteddPosts);
+router.get("/user/getLikes/:userId", post_controllers_1.PostControllers.getAllLikes);
 router.get("/user/:userId", post_controllers_1.PostControllers.getPostByUser);
 router.get("/:postId", post_controllers_1.PostControllers.getPostById);
 router.put("/update/:postId", multer_config_1.multerUpload.single("image"), post_controllers_1.PostControllers.updatePost);

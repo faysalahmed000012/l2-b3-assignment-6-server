@@ -135,6 +135,10 @@ UserSchema.pre("save", function (next) {
         next();
     });
 });
+UserSchema.post("save", function (doc, next) {
+    doc.password = "";
+    next();
+});
 UserSchema.statics.isPasswordMatched = function (plainTextPassword, hashedPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield bcrypt_1.default.compare(plainTextPassword, hashedPassword);
@@ -144,8 +148,4 @@ UserSchema.statics.isJWTIssuedBeforePasswordChanged = function (passwordChangedT
     const passwordChangedTime = new Date(passwordChangedTimestamp).getTime() / 1000;
     return passwordChangedTime > jwtIssuedTimestamp;
 };
-UserSchema.post("save", function (doc, next) {
-    doc.password = "";
-    next();
-});
 exports.User = mongoose_1.default.model("User", UserSchema);

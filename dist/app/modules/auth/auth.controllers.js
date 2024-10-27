@@ -40,9 +40,7 @@ const registerUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         success: true,
         statusCode: 200,
         message: "User Registered successfully",
-        AccessToken: accessToken,
-        RefreshToken: refreshToken,
-        data: updatedUser,
+        data: result,
     });
 }));
 const userLogin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -50,7 +48,7 @@ const userLogin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
     const { accessToken, refreshToken, user } = result;
     const { password } = user, rest = __rest(user, ["password"]);
     const updatedUser = Object.assign(Object.assign({}, rest), { password: "" });
-    const response = res.cookie("refreshToken", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
         secure: config_1.default.NODE_ENV !== "development",
         httpOnly: true,
     });
