@@ -16,6 +16,12 @@ const UserSchema = new Schema<IUser, UserModel>(
     password: {
       type: String,
       required: true,
+      select: 0,
+    },
+    savedPosts: {
+      type: [String],
+      required: false,
+      ref: "Post",
     },
     bio: {
       type: String,

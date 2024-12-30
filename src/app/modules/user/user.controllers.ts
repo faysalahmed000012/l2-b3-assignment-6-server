@@ -68,6 +68,19 @@ const makeAdmin = catchAsync(async (req, res) => {
   });
 });
 
+const savePost = catchAsync(async (req, res) => {
+  const userId = req.body.userId;
+  const postId = req.body.postId;
+  const action = req.body.action;
+  const result = await UserServices.savePost(userId, postId, action);
+
+  res.status(200).json({
+    success: true,
+    message: "Post Saved Successfully",
+    data: result,
+  });
+});
+
 const follow = catchAsync(async (req, res) => {
   const user = req.body.follower;
   const following = req.body.following;
@@ -118,5 +131,6 @@ export const UserControllers = {
   makeAdmin,
   follow,
   deleteUser,
+  savePost,
   getFollowersAndFollowing,
 };

@@ -72,6 +72,17 @@ const makeAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
         data: result,
     });
 }));
+const savePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.body.userId;
+    const postId = req.body.postId;
+    const action = req.body.action;
+    const result = yield user_services_1.UserServices.savePost(userId, postId, action);
+    res.status(200).json({
+        success: true,
+        message: "Post Saved Successfully",
+        data: result,
+    });
+}));
 const follow = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.body.follower;
     const following = req.body.following;
@@ -117,5 +128,6 @@ exports.UserControllers = {
     makeAdmin,
     follow,
     deleteUser,
+    savePost,
     getFollowersAndFollowing,
 };

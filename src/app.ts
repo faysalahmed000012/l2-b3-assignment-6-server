@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
+import config from "./app/config";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
 import router from "./app/routes";
@@ -10,7 +11,7 @@ const app: Application = express();
 // parsers
 app.use(
   cors({
-    origin: "https://l2-b3-assignment-6-client.vercel.app/",
+    origin: config.client_url,
     credentials: true,
   })
 );

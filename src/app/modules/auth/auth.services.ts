@@ -17,6 +17,9 @@ const registerUser = async (payload: IUser) => {
   }
   const user = await User.create(payload);
   const jwtPayload = {
+    _id: user._id,
+    name: user.name,
+    profilePicture: user.profilePicture ? user.profilePicture : null,
     email: user.email,
     role: user.role,
   };
@@ -60,6 +63,9 @@ const userLogin = async (payload: ILogin) => {
   }
 
   const jwtPayload = {
+    _id: user._id,
+    name: user.name,
+    profilePicture: user.profilePicture ? user.profilePicture : null,
     email: user.email,
     role: user.role,
   };
@@ -97,6 +103,9 @@ const refreshToken = async (token: string) => {
   }
 
   const jwtPayload = {
+    _id: user._id,
+    name: user.name,
+    profilePicture: user.profilePicture ? user.profilePicture : null,
     email: user.email,
     role: user.role,
   };
@@ -171,7 +180,7 @@ const forgotPassword = async (email: string) => {
 
   await user.save();
 
-  const resetLink = `${config.application_url}/reset-password/${resetToken}`;
+  const resetLink = `${config.client_url}reset-password/${resetToken}`;
 
   const mailOptions = {
     from: "faysal000012@gmail.com",

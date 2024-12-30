@@ -52,9 +52,9 @@ const getPostByUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: post,
     });
 }));
-const getUserUpvoteddPosts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserLikedPosts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
-    const post = yield post_services_1.PostServices.getUserUpvotedPosts(userId);
+    const post = yield post_services_1.PostServices.getUserLikedPosts(userId);
     res.status(200).json({
         success: true,
         message: "Posts Fetched Successfully",
@@ -155,6 +155,6 @@ exports.PostControllers = {
     addRating,
     getPostById,
     getPostByUser,
-    getUserUpvoteddPosts,
+    getUserLikedPosts,
     getAllLikes,
 };

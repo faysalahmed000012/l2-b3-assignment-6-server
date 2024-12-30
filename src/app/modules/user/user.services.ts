@@ -61,6 +61,29 @@ const removeFromAdmin = async (email: string) => {
   return res;
 };
 
+const savePost = async (
+  userId: string,
+  postId: string,
+  action: "add" | "remove"
+) => {
+  let res;
+  if (action === "add") {
+    res = await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { savedPosts: postId } },
+      { new: true }
+    );
+  } else if (action === "remove") {
+    res = await User.findByIdAndUpdate(
+      userId,
+      { $unset: { savedPosts: postId } },
+      { new: true }
+    );
+  }
+
+  return res;
+};
+
 const follow = async (userId: string, followId: string) => {
   const user = await User.findById(userId);
   const followUser = await User.findById(followId);
@@ -120,4 +143,5 @@ export const UserServices = {
   unFollow,
   deleteUser,
   getFollowersAndFollowing,
+  savePost,
 };

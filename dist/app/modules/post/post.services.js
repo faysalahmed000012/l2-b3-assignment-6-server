@@ -21,7 +21,7 @@ const createPost = (data) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const getAllPosts = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const postQuery = new queryBuilder_1.default(post_model_1.Post.find().populate("user"), query)
+    const postQuery = new queryBuilder_1.default(post_model_1.Post.find().populate("author"), query)
         .search(["title", "description"])
         .filter()
         .sort()
@@ -35,23 +35,28 @@ const getAllPosts = (query) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const getPostById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const post = yield post_model_1.Post.findById(id).populate("user");
+    const post = yield post_model_1.Post.findById(id).populate("author");
     if (!post) {
         throw new AppError_1.default(404, "Post not found");
     }
     return post;
 });
 const getPostByUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const posts = post_model_1.Post.find({ user: userId }).populate("user");
+    const posts = post_model_1.Post.find({ author: userId }).populate("author");
     return posts;
 });
 const getAllLikes = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const posts = post_model_1.Post.find({ user: userId }).select("upVotes");
-    const totalLikes = (yield posts).reduce((sum, item) => sum + (item.upVotes || 0), 0);
+    var _a;
+    const posts = post_model_1.Post.find({ author: userId }).select("likes");
+    // const totalLikes = (await posts).reduce(
+    //   (sum, item) => sum + (item.upVotes || 0),
+    //   0
+    // );
+    const totalLikes = (_a = (yield posts)) === null || _a === void 0 ? void 0 : _a.length;
     return totalLikes;
 });
-const getUserUpvotedPosts = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const posts = post_model_1.Post.find({ "votes.user": userId }).populate("user");
+const getUserLikedPosts = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const posts = post_model_1.Post.find({ "likes.user": userId }).populate("author");
     return posts;
 });
 const updatePost = (payload, id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -84,31 +89,46 @@ const editComment = (postId, comment) => __awaiter(void 0, void 0, void 0, funct
     return updatedPost;
 });
 const manageVote = (postId, userId, voteType) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const post = yield post_model_1.Post.findById(postId);
     if (!post) {
         throw new AppError_1.default(404, "Post not found");
     }
-    const existingVoteIndex = post.votes.findIndex((v) => v.user.toString() === userId);
-    const voteValue = voteType === "upVote" ? 1 : -1;
-    if (existingVoteIndex > -1) {
-        const existingVote = post.votes[existingVoteIndex];
-        if (existingVote.vote === voteValue) {
-            (_a = post === null || post === void 0 ? void 0 : post.votes) === null || _a === void 0 ? void 0 : _a.splice(existingVoteIndex, 1);
-            post[voteType === "upVote" ? "upVotes" : "downVotes"] -= 1;
+    let updatedPost;
+    if (voteType === "upVote") {
+        //post.likes?.push({user: userId})
+        //@ts-ignore
+        if (post.likes.length == 0) {
+            updatedPost = yield post_model_1.Post.findByIdAndUpdate(postId, { $set: { likes: [{ user: userId }] } }, { new: true });
         }
         else {
-            existingVote.vote = voteValue;
-            post.upVotes += voteValue;
-            post.downVotes - +voteValue;
+            updatedPost = yield post_model_1.Post.findByIdAndUpdate(postId, { $addToSet: { "likes.user": userId } }, { new: true });
         }
     }
-    else {
-        post.votes.push({ user: userId, vote: voteValue });
-        post[voteType === "upVote" ? "upVotes" : "downVotes"] += 1;
+    else if (voteType === "downVote") {
+        updatedPost = yield post_model_1.Post.findByIdAndUpdate(postId, {
+            $pull: { likes: { user: userId } },
+        }, { new: true });
     }
-    yield post.save();
-    return { upVotes: post.upVotes, downVotes: post.downVotes };
+    // const existingVoteIndex = post.votes!.findIndex(
+    //   (v) => v.user.toString() === userId
+    // );
+    // const voteValue = voteType === "upVote" ? 1 : -1;
+    // if (existingVoteIndex > -1) {
+    //   const existingVote = post.votes![existingVoteIndex];
+    //   if (existingVote.vote === voteValue) {
+    //     post?.votes?.splice(existingVoteIndex, 1);
+    //     post[voteType === "upVote" ? "upVotes" : "downVotes"]! -= 1;
+    //   } else {
+    //     existingVote.vote = voteValue;
+    //     (post.upVotes as number) += voteValue;
+    //     (post.downVotes as number) - +voteValue;
+    //   }
+    // } else {
+    //   post.votes!.push({ user: userId, vote: voteValue });
+    //   post[voteType === "upVote" ? "upVotes" : "downVotes"]! += 1;
+    // }
+    // await post.save();
+    return updatedPost;
 });
 const addRating = (postId, userId, rating) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield post_model_1.Post.findById(postId);
@@ -118,19 +138,24 @@ const addRating = (postId, userId, rating) => __awaiter(void 0, void 0, void 0, 
     if (rating < 0 || rating > 5) {
         throw new AppError_1.default(400, "Invalid rating");
     }
+    // const updatedPost = await Post.findByIdAndUpdate(
+    //   postId,
+    //   { $addToSet: { ratings: { user: userId, rating: rating } } },
+    //   { new: true }
+    // );
     const existingRatingIndex = post.ratings.findIndex((r) => r.user.toString() === userId);
     if (existingRatingIndex > -1) {
-        const oldRating = post.ratings[existingRatingIndex].rating;
+        //  const oldRating = post.ratings![existingRatingIndex].rating;
         post.ratings[existingRatingIndex].rating = rating;
-        post.ratingSum = post.ratingSum - oldRating + rating;
+        // post.ratingSum = (post.ratingSum as number) - oldRating + rating;
     }
     else {
         post.ratings.push({ user: userId, rating: rating });
-        post.totalRatings += 1;
-        post.ratingSum += rating;
+        // (post.totalRatings as number) += 1;
+        // (post.ratingSum as number) += rating;
     }
-    post.averageRating =
-        post.ratingSum / post.totalRatings;
+    // post.averageRating =
+    //   (post.ratingSum as number) / (post.totalRatings as number);
     yield post.save();
     return post;
 });
@@ -155,7 +180,7 @@ exports.PostServices = {
     manageVote,
     addRating,
     getPostByUser,
-    getUserUpvotedPosts,
+    getUserLikedPosts,
     getPostById,
     deleteComment,
     editComment,

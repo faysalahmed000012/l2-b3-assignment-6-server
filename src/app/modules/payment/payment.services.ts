@@ -1,5 +1,4 @@
 import moment from "moment";
-import AppError from "../../errors/AppError";
 import { initiatePayment } from "../../utils/payment";
 import { User } from "../user/user.model";
 
@@ -20,16 +19,25 @@ const makePayment = async (userId: string) => {
 };
 
 const successPayment = async (tranId: string) => {
-  const user = await User.findOne({ tranId: tranId });
+  const premiumExpires = moment().add(1, "months").toDate();
 
-  if (!user) {
-    throw new AppError(404, "User Does Not Exists");
-  }
+  const user = await User.findOneAndUpdate(
+    { tranId: tranId },
+    {
+      isPremium: true,
+      premiumExpires: premiumExpires,
+    },
+    { new: true }
+  );
 
-  user.isPremium = true;
-  user.premiumExpires = moment().add(1, "months").toDate();
+  // if (!user) {
+  //   throw new AppError(404, "User Does Not Exists");
+  // }
 
-  await user.save();
+  // user.isPremium = true;
+  // user.premiumExpires = moment().add(1, "months").toDate();
+  // console.log("confirmation services");
+  // await user.save();
   return true;
 };
 

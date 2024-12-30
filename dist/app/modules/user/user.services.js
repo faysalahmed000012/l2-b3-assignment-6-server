@@ -50,6 +50,16 @@ const removeFromAdmin = (email) => __awaiter(void 0, void 0, void 0, function* (
     const res = yield user_model_1.User.findOneAndUpdate({ email }, { role: "user" }, { new: true });
     return res;
 });
+const savePost = (userId, postId, action) => __awaiter(void 0, void 0, void 0, function* () {
+    let res;
+    if (action === "add") {
+        res = yield user_model_1.User.findByIdAndUpdate(userId, { $addToSet: { savedPosts: postId } }, { new: true });
+    }
+    else if (action === "remove") {
+        res = yield user_model_1.User.findByIdAndUpdate(userId, { $unset: { savedPosts: postId } }, { new: true });
+    }
+    return res;
+});
 const follow = (userId, followId) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     const user = yield user_model_1.User.findById(userId);
@@ -99,4 +109,5 @@ exports.UserServices = {
     unFollow,
     deleteUser,
     getFollowersAndFollowing,
+    savePost,
 };

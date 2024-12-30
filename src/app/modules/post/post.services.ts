@@ -9,7 +9,7 @@ const createPost = async (data: IPost) => {
 };
 
 const getAllPosts = async (query: Record<string, unknown>) => {
-  const postQuery = new QueryBuilder(Post.find().populate("user"), query)
+  const postQuery = new QueryBuilder(Post.find().populate("author"), query)
     .search(["title", "description"])
     .filter()
     .sort()
@@ -26,7 +26,7 @@ const getAllPosts = async (query: Record<string, unknown>) => {
 };
 
 const getPostById = async (id: string) => {
-  const post = await Post.findById(id).populate("user");
+  const post = await Post.findById(id).populate("author");
   if (!post) {
     throw new AppError(404, "Post not found");
   }
@@ -34,21 +34,22 @@ const getPostById = async (id: string) => {
 };
 
 const getPostByUser = async (userId: string) => {
-  const posts = Post.find({ user: userId }).populate("user");
+  const posts = Post.find({ author: userId }).populate("author");
   return posts;
 };
 
 const getAllLikes = async (userId: string) => {
-  const posts = Post.find({ user: userId }).select("upVotes");
-  const totalLikes = (await posts).reduce(
-    (sum, item) => sum + (item.upVotes || 0),
-    0
-  );
+  const posts = Post.find({ author: userId }).select("likes");
+  // const totalLikes = (await posts).reduce(
+  //   (sum, item) => sum + (item.upVotes || 0),
+  //   0
+  // );
+  const totalLikes = (await posts)?.length;
   return totalLikes;
 };
 
-const getUserUpvotedPosts = async (userId: string) => {
-  const posts = Post.find({ "votes.user": userId }).populate("user");
+const getUserLikedPosts = async (userId: string) => {
+  const posts = Post.find({ "likes.user": userId }).populate("author");
   return posts;
 };
 
@@ -107,30 +108,56 @@ const manageVote = async (
   if (!post) {
     throw new AppError(404, "Post not found");
   }
-
-  const existingVoteIndex = post.votes!.findIndex(
-    (v) => v.user.toString() === userId
-  );
-  const voteValue = voteType === "upVote" ? 1 : -1;
-
-  if (existingVoteIndex > -1) {
-    const existingVote = post.votes![existingVoteIndex];
-    if (existingVote.vote === voteValue) {
-      post?.votes?.splice(existingVoteIndex, 1);
-      post[voteType === "upVote" ? "upVotes" : "downVotes"]! -= 1;
+  let updatedPost;
+  if (voteType === "upVote") {
+    //post.likes?.push({user: userId})
+    //@ts-ignore
+    if (post.likes.length == 0) {
+      updatedPost = await Post.findByIdAndUpdate(
+        postId,
+        { $set: { likes: [{ user: userId }] } },
+        { new: true }
+      );
     } else {
-      existingVote.vote = voteValue;
-      (post.upVotes as number) += voteValue;
-      (post.downVotes as number) - +voteValue;
+      updatedPost = await Post.findByIdAndUpdate(
+        postId,
+        { $addToSet: { "likes.user": userId } },
+        { new: true }
+      );
     }
-  } else {
-    post.votes!.push({ user: userId, vote: voteValue });
-    post[voteType === "upVote" ? "upVotes" : "downVotes"]! += 1;
+  } else if (voteType === "downVote") {
+    updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $pull: { likes: { user: userId } },
+      },
+      { new: true }
+    );
   }
 
-  await post.save();
+  // const existingVoteIndex = post.votes!.findIndex(
+  //   (v) => v.user.toString() === userId
+  // );
+  // const voteValue = voteType === "upVote" ? 1 : -1;
 
-  return { upVotes: post.upVotes, downVotes: post.downVotes };
+  // if (existingVoteIndex > -1) {
+  //   const existingVote = post.votes![existingVoteIndex];
+  //   if (existingVote.vote === voteValue) {
+  //     post?.votes?.splice(existingVoteIndex, 1);
+  //     post[voteType === "upVote" ? "upVotes" : "downVotes"]! -= 1;
+  //   } else {
+  //     existingVote.vote = voteValue;
+  //     (post.upVotes as number) += voteValue;
+  //     (post.downVotes as number) - +voteValue;
+  //   }
+  // } else {
+  //   post.votes!.push({ user: userId, vote: voteValue });
+  //   post[voteType === "upVote" ? "upVotes" : "downVotes"]! += 1;
+  // }
+
+  // await post.save();
+
+  return updatedPost;
 };
 
 const addRating = async (postId: string, userId: string, rating: number) => {
@@ -142,22 +169,28 @@ const addRating = async (postId: string, userId: string, rating: number) => {
     throw new AppError(400, "Invalid rating");
   }
 
+  // const updatedPost = await Post.findByIdAndUpdate(
+  //   postId,
+  //   { $addToSet: { ratings: { user: userId, rating: rating } } },
+  //   { new: true }
+  // );
+
   const existingRatingIndex = post.ratings!.findIndex(
     (r) => r.user.toString() === userId
   );
 
   if (existingRatingIndex > -1) {
-    const oldRating = post.ratings![existingRatingIndex].rating;
+    //  const oldRating = post.ratings![existingRatingIndex].rating;
     post.ratings![existingRatingIndex].rating = rating;
-    post.ratingSum = (post.ratingSum as number) - oldRating + rating;
+    // post.ratingSum = (post.ratingSum as number) - oldRating + rating;
   } else {
     post.ratings!.push({ user: userId, rating: rating });
-    (post.totalRatings as number) += 1;
-    (post.ratingSum as number) += rating;
+    // (post.totalRatings as number) += 1;
+    // (post.ratingSum as number) += rating;
   }
 
-  post.averageRating =
-    (post.ratingSum as number) / (post.totalRatings as number);
+  // post.averageRating =
+  //   (post.ratingSum as number) / (post.totalRatings as number);
 
   await post.save();
 
@@ -192,7 +225,7 @@ export const PostServices = {
   manageVote,
   addRating,
   getPostByUser,
-  getUserUpvotedPosts,
+  getUserLikedPosts,
   getPostById,
   deleteComment,
   editComment,

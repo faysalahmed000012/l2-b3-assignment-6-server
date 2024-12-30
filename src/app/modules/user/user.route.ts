@@ -16,5 +16,6 @@ router.get("/:email", UserControllers.getUserByEmail);
 router.put("/block", UserControllers.blockUser);
 router.put("/makeAdmin", UserControllers.makeAdmin);
 router.put("/follow", UserControllers.follow);
+router.put("/savePost", UserControllers.savePost);
 
 export const UserRoutes = router;

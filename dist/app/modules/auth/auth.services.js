@@ -30,6 +30,8 @@ const registerUser = (payload) => __awaiter(void 0, void 0, void 0, function* ()
     }
     const user = yield user_model_1.User.create(payload);
     const jwtPayload = {
+        _id: user._id,
+        name: user.name,
         email: user.email,
         role: user.role,
     };
@@ -53,6 +55,8 @@ const userLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(403, "Wrong Password");
     }
     const jwtPayload = {
+        _id: user._id,
+        name: user.name,
         email: user.email,
         role: user.role,
     };
@@ -72,6 +76,8 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(404, "User not Found!");
     }
     const jwtPayload = {
+        _id: user._id,
+        name: user.name,
         email: user.email,
         role: user.role,
     };
@@ -119,7 +125,7 @@ const forgotPassword = (email) => __awaiter(void 0, void 0, void 0, function* ()
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = Date.now() + 3600000;
     yield user.save();
-    const resetLink = `${config_1.default.application_url}/reset-password/${resetToken}`;
+    const resetLink = `${config_1.default.client_url}reset-password/${resetToken}`;
     const mailOptions = {
         from: "faysal000012@gmail.com",
         to: user.email,

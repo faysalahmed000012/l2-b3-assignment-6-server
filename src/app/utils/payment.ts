@@ -23,5 +23,6 @@ export const initiatePayment = async (paymentData: any) => {
     cus_phone: "+8801704",
     type: "json",
   });
+
   return response?.data;
 };

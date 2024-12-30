@@ -20,6 +20,10 @@ const commentSchema = new Schema<IComment>(
       type: String,
       required: true,
     },
+    replyTo: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );
@@ -45,10 +49,7 @@ const PostSchema = new Schema<IPost>(
       type: [commentSchema],
       required: false,
     },
-    rating: {
-      type: Number,
-      required: false,
-    },
+
     tags: {
       type: [String],
       enum: [
@@ -82,52 +83,39 @@ const PostSchema = new Schema<IPost>(
         },
       },
     ],
-    user: {
+    author: {
       type: String,
       required: true,
       ref: "User",
     },
-    totalRatings: {
-      type: Number,
-      default: 0,
-    },
-    ratingSum: {
-      type: Number,
-      default: 0,
-    },
-    averageRating: {
-      type: Number,
-      default: 0,
-    },
+
     ratings: [
       {
-        user: Schema.Types.ObjectId,
+        user: String,
         rating: Number,
       },
     ],
-    upVotes: {
-      type: Number,
-      default: 0,
-    },
-    downVotes: {
-      type: Number,
-      default: 0,
-    },
-    votes: [
+
+    likes: [
       {
-        user: Schema.Types.ObjectId,
-        vote: Number,
+        user: String,
       },
     ],
     isPremium: {
       type: Boolean,
       default: false,
     },
-    status: {
+    difficulty: {
       type: String,
-      enum: ["pending", "posted", "rejected"],
+      enum: ["Easy", "Medium", "Hard"],
+    },
+    isVegan: {
+      type: Boolean,
+      default: false,
+    },
+    servings: {
+      type: Number,
       required: true,
-      default: "pending",
     },
   },
   { timestamps: true }

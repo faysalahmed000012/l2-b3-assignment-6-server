@@ -14,6 +14,7 @@ export interface IUser {
   ratedPosts?: string[];
   followers?: string[];
   following?: string[];
+  savedPosts?: string[];
   isPremium: boolean;
   tranId?: string | null;
   resetPasswordExpires: string | number | Date | undefined;

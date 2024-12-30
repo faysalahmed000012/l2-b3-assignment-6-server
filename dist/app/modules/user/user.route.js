@@ -13,4 +13,5 @@ router.get("/:email", user_controllers_1.UserControllers.getUserByEmail);
 router.put("/block", user_controllers_1.UserControllers.blockUser);
 router.put("/makeAdmin", user_controllers_1.UserControllers.makeAdmin);
 router.put("/follow", user_controllers_1.UserControllers.follow);
+router.put("/savePost", user_controllers_1.UserControllers.savePost);
 exports.UserRoutes = router;

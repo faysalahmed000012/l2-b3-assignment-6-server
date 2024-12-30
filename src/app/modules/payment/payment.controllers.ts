@@ -14,6 +14,7 @@ const makePayment = catchAsync(async (req, res) => {
 const confirmationController = catchAsync(async (req, res) => {
   const transectionId = req.query.trnx;
   const userId = req.body.userId;
+
   const result = await PaymentServices.successPayment(transectionId as string);
 
   if (result) {

@@ -15,13 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
+const config_1 = __importDefault(require("./app/config"));
 const globalErrorHandler_1 = __importDefault(require("./app/middlewares/globalErrorHandler"));
 const notFound_1 = __importDefault(require("./app/middlewares/notFound"));
 const routes_1 = __importDefault(require("./app/routes"));
 const app = (0, express_1.default)();
 // parsers
 app.use((0, cors_1.default)({
-    origin: "https://l2-b3-assignment-6-client.vercel.app/",
+    origin: config_1.default.client_url,
     credentials: true,
 }));
 app.use(express_1.default.json());

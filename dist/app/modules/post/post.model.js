@@ -43,6 +43,10 @@ const commentSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    replyTo: {
+        type: String,
+        required: false,
+    },
 }, { timestamps: true });
 const PostSchema = new mongoose_1.Schema({
     title: {
@@ -62,10 +66,6 @@ const PostSchema = new mongoose_1.Schema({
     },
     comments: {
         type: [commentSchema],
-        required: false,
-    },
-    rating: {
-        type: Number,
         required: false,
     },
     tags: {
@@ -101,52 +101,37 @@ const PostSchema = new mongoose_1.Schema({
             },
         },
     ],
-    user: {
+    author: {
         type: String,
         required: true,
         ref: "User",
     },
-    totalRatings: {
-        type: Number,
-        default: 0,
-    },
-    ratingSum: {
-        type: Number,
-        default: 0,
-    },
-    averageRating: {
-        type: Number,
-        default: 0,
-    },
     ratings: [
         {
-            user: mongoose_1.Schema.Types.ObjectId,
+            user: String,
             rating: Number,
         },
     ],
-    upVotes: {
-        type: Number,
-        default: 0,
-    },
-    downVotes: {
-        type: Number,
-        default: 0,
-    },
-    votes: [
+    likes: [
         {
-            user: mongoose_1.Schema.Types.ObjectId,
-            vote: Number,
+            user: String,
         },
     ],
     isPremium: {
         type: Boolean,
         default: false,
     },
-    status: {
+    difficulty: {
         type: String,
-        enum: ["pending", "posted", "rejected"],
+        enum: ["Easy", "Medium", "Hard"],
+    },
+    isVegan: {
+        type: Boolean,
+        default: false,
+    },
+    servings: {
+        type: Number,
         required: true,
-        default: "pending",
     },
 }, { timestamps: true });
 function arrayLimit(val) {

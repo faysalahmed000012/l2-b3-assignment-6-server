@@ -1,6 +1,7 @@
 export interface IComment {
   _id?: string;
   userId: string;
+  replyTo?: string;
   userName: string;
   userImage: string;
   content: string;
@@ -11,14 +12,14 @@ export interface IPost {
   description: string;
   image: string;
   comments?: IComment[];
-  rating?: number;
-  totalRatings?: number;
-  ratingSum?: number;
-  averageRating?: number;
+  // rating?: number;
+  // totalRatings?: number;
+  // ratingSum?: number;
+  // averageRating?: number;
   ratings?: [{ user: string; rating: number }];
-  upVotes?: number;
-  downVotes?: number;
-  votes?: [{ user: string; vote: Number }];
+  // upVotes?: number;
+  // downVotes?: number;
+  likes?: [{ user: string }];
   tags: {
     type: string[];
     enum: [
@@ -38,7 +39,9 @@ export interface IPost {
     name: string;
     quantity: string;
   }[];
-  user: string;
+  author: string;
   isPremium?: boolean;
-  status: "pending" | "posted" | "rejected";
+  difficulty: "Easy" | "Medium" | "Hard";
+  isVegan: boolean;
+  servings: number;
 }

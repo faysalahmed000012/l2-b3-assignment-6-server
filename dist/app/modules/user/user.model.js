@@ -51,6 +51,12 @@ const UserSchema = new mongoose_1.Schema({
     password: {
         type: String,
         required: true,
+        select: 0,
+    },
+    savedPosts: {
+        type: [String],
+        required: false,
+        ref: "Post",
     },
     bio: {
         type: String,
